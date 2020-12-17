@@ -1,0 +1,5 @@
+Return Period,Annual Chance,Chance over 10 years,Likelihood
+10 years,10%,>65%,Very High
+50 years,2-10%,18-65%,High
+100 years,1-2%,10-18%,Medium
+200 years,0.5-1%,5-10%,Low
