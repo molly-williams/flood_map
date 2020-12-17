@@ -15,6 +15,7 @@ library(raster)
 library(tidyverse)
 library(rgeos)
 library(sf)
+require(stringr)
 
 
 
@@ -29,7 +30,7 @@ flood_polys <- st_transform(flood_polys, 4326)
 # Rename columns and hydrology/probability categories +re-level
 flood_polys <- flood_polys %>% 
     dplyr::select(Hydrology=hydro, SLR, Probability=Prob) %>% 
-    dplyr::mutate(Hydrology = ifelse(stringr::str_detect(Hydrology, "E"), "2085", 
+    dplyr::mutate(Hydrology = ifelse(str_detect(Hydrology, "E"), "2085", 
                                      ifelse(str_detect(Hydrology, "M"), 2050, "Historical"))) %>% 
     dplyr::mutate(Probability = factor(ifelse(Probability == 10, "<10 years",
                                       ifelse(Probability == 50, "10-50 years", 
@@ -149,6 +150,21 @@ function(input, output, session) {
 
     })
     
+   filteredData10 <- reactive({
+     flood_polys10[flood_polys10$Hydrology == input$hydro & flood_polys10$SLR == input$SLR,]
+   })
+   
+   filteredData50 <- reactive({
+     flood_polys50[flood_polys50$Hydrology == input$hydro & flood_polys50$SLR == input$SLR,]
+   })
+   
+   filteredData100 <- reactive({
+     flood_polys100[flood_polys100$Hydrology == input$hydro & flood_polys100$SLR == input$SLR,]
+   })
+   
+   filteredData200 <- reactive({
+     flood_polys200[flood_polys200$Hydrology == input$hydro & flood_polys200$SLR == input$SLR,]
+   })
 
     # Draw interactive polygons
     observe({
@@ -159,21 +175,7 @@ function(input, output, session) {
   #      flood_polys[flood_polys$Hydrology == input$hydro & flood_polys$SLR == input$SLR,]
   #    })
       
-          filteredData10 <- reactive({
-              flood_polys10[flood_polys10$Hydrology == input$hydro & flood_polys10$SLR == input$SLR,]
-          })
           
-          filteredData50 <- reactive({
-            flood_polys50[flood_polys50$Hydrology == input$hydro & flood_polys50$SLR == input$SLR,]
-          })
-          
-          filteredData100 <- reactive({
-            flood_polys100[flood_polys100$Hydrology == input$hydro & flood_polys100$SLR == input$SLR,]
-          })
-          
-          filteredData200 <- reactive({
-            flood_polys200[flood_polys200$Hydrology == input$hydro & flood_polys200$SLR == input$SLR,]
-          })
           
           
           leafletProxy("map") %>%
